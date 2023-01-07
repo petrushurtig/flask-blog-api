@@ -5,7 +5,7 @@ from flask_bcrypt import generate_password_hash
 
 from app_source import app
 from src.db.dbmodels.user import User
-from src.shared.auth import Auth
+from src.shared.auth import Auth, auth_required
 
 
 user_api = Blueprint('users', __name__)
@@ -77,21 +77,58 @@ def login():
 #Get users
 
 @user_api.route('/', methods=['GET'])
-#@Auth.auth_required
-def get_all_users():
+@auth_required()
+def get_all_users(user: User):
     
     try:
         users = User.get_all_users()
         users_list = []
 
         for user in users:
-            users_list.append(user.json())
-
-        app.logger.info(users)
+            users_list.append(user)
         
         return jsonify(users), 200
     except Exception as e:
         app.logger.info(e)
 
         return jsonify({"message": "Server error"}), 500
+
+@user_api.route('/<user_id>', methods=['GET'])
+@auth_required()
+def get_user_by_id(user: User, user_id: str):
+    
+    try:
+        user = User.get_user_by_id(user_id)
+        
+        if not user:
+            return jsonify({"message": "user not found"})
+        
+        return jsonify(user.json()), 200
+    except Exception as e:
+        app.logger.info(e)
+
+        return jsonify({"message": "Server error"}), 500
+
+@user_api.route('/me', methods=['GET'])
+@auth_required()
+def get_user_details(user: User):
+
+    auth_header = "Authorization"
+
+    if auth_header not in request.headers:
+        return jsonify({"message": "Token missing"}), 401
+
+    token = request.headers[auth_header]
+
+    try:
+        user = Auth.get_user_by_token(token)
+
+        if not user:
+            return jsonify("Token invalid")
+
+        return jsonify(user.json())
+    except Exception as e:
+        app.logger.info(e)
+        return jsonify({"message": "Unauthorized"}), 401
+
 

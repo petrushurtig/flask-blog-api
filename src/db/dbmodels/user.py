@@ -32,9 +32,9 @@ class User(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    @staticmethod
     def get_all_users():
-        return User.query.all()
+        users = User.query.all()
+        return [user.json() for user in users]
 
     @staticmethod
     def get_user_by_id(id):
@@ -58,7 +58,7 @@ class User(db.Model):
             else:
                 app.logger.info("pass incorrect")
 
-    def json(self) -> dict:
+    def json(self):
         created_at = self.created_at
         updated_at = self.updated_at
 

@@ -7,6 +7,31 @@ from flask import json, Response, request, g, jsonify
 from src.db.dbmodels.user import User
 from app_source import app
 
+
+def auth_required():
+        def inner_decorator(func, ):
+            @wraps(func)
+            def decorated_auth(*args, **kwargs):
+
+                auth_header = "Authorization"
+
+                if auth_header not in request.headers:
+                    return jsonify({"message": "Token missing"}), 401
+
+                token = request.headers[auth_header]
+
+                try:
+                    user = Auth.get_user_by_token(token)
+
+                    if not user:
+                        return jsonify("Token invalid")
+
+                    return func(user, *args, **kwargs)
+                except Exception as e:
+                    app.logger.info(e)
+                    return jsonify({"message": "Unauthorized"}), 401
+            return decorated_auth
+        return inner_decorator
 class Auth():
 
     load_dotenv()
@@ -25,45 +50,34 @@ class Auth():
             error_msg = "Exception when calling Auth.encode_token: %s\n" % e
             raise Exception(error_msg)
 
-        
-    @staticmethod
     def decode_token(token):
-        re = {'data': {}, 'error': {}}
         try:
-            payload = jwt.decode(token, os.environ('JWT_SECRET_KEY'))
-            re['data'] = {'user_id', payload['sub']}
-            return re
-        except jwt.ExpiredSignatureError as e1:
-            re['error'] = {'message': 'Token expired'}
-            return re
-        except jwt.InvalidTokenError:
-            re['error'] = {'message': 'Invalid token'}
-            return re
+            payload = jwt.decode(token, os.environ['JWT_SECRET_KEY'], algorithms=["HS256"])
+            return payload['user_id']
+        except jwt.ExpiredSignatureError as e:
+            error_msg = "TokenExpiredException when calling Auth.decode_token: %s\n" % e
+            raise Exception(error_msg)
+        except Exception as e:
+            error_msg = "Exception when calling Auth.decode_token: %s\n" % e
+            raise Exception(error_msg)
 
-    @staticmethod
-    def auth_required(func):
-        @wraps(func)
-        def decorated_auth(*args, **kwargs):
-
-            if 'api-token' not in request.headers:
-                msg = {"message": "Token missing"}
-                return jsonify(msg), 400
+    def get_user_by_token(bearer_access_token):
+        try:
+            bearer_access_token_prefix = "Bearer token|"
+            if not str(bearer_access_token).startswith(bearer_access_token_prefix):
+                raise Exception(f"bearer_access_token does not start with "
+                                    f"{bearer_access_token_prefix}")
             
-            token = request.headers.get('api-token')
-            data = Auth.decode_token(token)
-            if data['error']:
-                msg = {"message": "error"}
-                return jsonify(msg), 400
+            access_token = str(bearer_access_token).split(bearer_access_token_prefix)[1]
+            payload = Auth.decode_token(access_token)
+            user = User.get_user_by_id(payload)
             
-            user_id = data['data']['user_id']
-            check_user = User.get_user_by_id(user_id)
-            if not check_user:
-                msg = {"message": "user does not exist, invalid token"}
-                return jsonify(msg), 400
+            return user
+        except Exception as e:
+            error_msg = "TokenException when calling AuthService.get_user_by_token: %s\n"\
+                % e
+            raise Exception(error_msg)
 
-            g.user = {'id': user_id}
-            return func(*args, **kwargs)
-        return decorated_auth
 
     @staticmethod
     def login(email, password):
