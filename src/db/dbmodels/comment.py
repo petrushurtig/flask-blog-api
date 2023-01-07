@@ -12,12 +12,6 @@ class Comment(db.Model):
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime)
 
-    def __init__(self, data):
-        self.content = data.get('content')
-        self.post_id = data.get('post_id')
-        self.created_at = datetime.datetime.utcnow()
-        self.updated_at = datetime.datetime.utcnow()
-
     def save(self):
         db.session.add(self)
         db.session.commit()
@@ -40,12 +34,13 @@ class Comment(db.Model):
     def get_comment_by_id(id):
         return Comment.query.get(id)
 
-    def __repr__(self):
-        return '<id {}>'.format(self.id)
+    @staticmethod
+    def get_comments_by_post_id(post_id):
+        return Comment.query.filter_by(post_id=post_id).all()
 
-class CommentSchema(Schema):
-    id = fields.Int(dump_only=True)
-    content = fields.Str(required=True)
-    post_id = fields.Int(required=True)
-    created_at = fields.DateTime(dump_only=True)
-    updated_at = fields.DateTime(dump_only=True)
+    def json(self):
+        return {
+            "id": self.id,
+            "content": self.content,
+            "created_at": self.created_at
+        }

@@ -2,7 +2,6 @@ import datetime
 from marshmallow import fields, Schema
 
 from src.db.config.db import db
-from .comment import CommentSchema
 
 class Post(db.Model):
     __tablename__= 'posts'
@@ -15,12 +14,17 @@ class Post(db.Model):
     updated_at = db.Column(db.DateTime)
     comments = db.relationship('Comment', backref='posts', lazy=True)
 
-    def __init__(self, data):
-        self.title = data.get('title')
-        self.content = data.get('content')
-        self.user_id = data.get('user_id')
-        self.created_at = datetime.datetime.utcnow()
-        self.updated_at = datetime.datetime.utcnow()
+    @staticmethod
+    def get_all_posts():
+        return Post.query.all()
+
+    @staticmethod
+    def get_post_by_id(id):
+        return Post.query.get(id)
+
+    @staticmethod
+    def get_posts_by_user_id(user_id):
+        return Post.query.filter_by(user_id=user_id).all()
 
     def save(self):
         db.session.add(self)
@@ -36,23 +40,11 @@ class Post(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    @staticmethod
-    def get_all_posts():
-        return Post.query.all()
-
-    @staticmethod
-    def get_post_by_id(id):
-        return Post.query.get(id)
-
-    def __repr__(self):
-        return '<id {}>'.format(self.id)
-
-class PostSchema(Schema):
-
-    id = fields.Int(dump_only=True)
-    title = fields.Str(required=True)
-    content = fields.Str(required=True)
-    user_id = fields.Int(required=True)
-    created_at = fields.DateTime(dump_only=True)
-    updated_at = fields.DateTime(dump_only=True)
-    comments = fields.Nested(CommentSchema, many=True)
+    def json(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "content": self.content,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at
+        }
