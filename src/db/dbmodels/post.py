@@ -16,7 +16,8 @@ class Post(db.Model):
 
     @staticmethod
     def get_all_posts():
-        return Post.query.all()
+        posts = Post.query.all()
+        return [post.json() for post in posts]
 
     @staticmethod
     def get_post_by_id(id):
@@ -41,10 +42,27 @@ class Post(db.Model):
         db.session.commit()
 
     def json(self):
-        return {
+        created_at = self.created_at
+        updated_at = self.updated_at
+
+        if created_at is not None:
+            created_at = created_at.isoformat()
+        if updated_at is not None:
+            updated_at = updated_at.isoformat()
+
+        json_dict = {
             "id": self.id,
+            "user_id": self.user_id,
             "title": self.title,
             "content": self.content,
-            "created_at": self.created_at,
-            "updated_at": self.updated_at
+            "created_at": created_at,
+            "updated_at": updated_at
         }
+
+        if self.comments and len(self.comments):
+            json_dict["comments"] = []
+
+            for comment in self.comments:
+                json_dict["comments"].append(comment.json())
+
+        return json_dict
