@@ -7,7 +7,8 @@ from app_source import app
 
 from src.web.routes import (
     user_routes,
-    post_routes
+    post_routes,
+    comment_routes
 )
 
 from src.db.dbmodels import * 
@@ -21,6 +22,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 app.register_blueprint(user_routes.user_api, url_prefix='/api/v1/users')
 app.register_blueprint(post_routes.blueprint, url_prefix='/api/v1/posts')
+app.register_blueprint(comment_routes.blueprint, url_prefix='/api/v1/comments')
 
 migrate = Migrate(app, db, compare_type=True)
 

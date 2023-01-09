@@ -131,4 +131,31 @@ def get_user_details(user: User):
         app.logger.info(e)
         return jsonify({"message": "Unauthorized"}), 401
 
+@user_api.route("/me", methods=["PUT"])
+@auth_required()
+def update_user(user: User):
+
+    auth_header = "Authorization"
+
+    if auth_header not in request.headers:
+        return jsonify({"message": "Token missing"}), 401
+
+    token = request.headers[auth_header]
+
+    try:
+        user = Auth.get_user_by_token(token)
+
+        if not user:
+            return jsonify("Token invalid")
+
+        user_data = request.get_json()
+
+        updated_user = User.update(user.id, user_data)
+        
+
+        return jsonify(updated_user.json())
+
+    except Exception as e:
+        app.logger.info(e)
+        return jsonify({"message": "Server error"}), 401
 

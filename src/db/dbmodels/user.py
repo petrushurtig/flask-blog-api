@@ -36,6 +36,20 @@ class User(db.Model):
         users = User.query.all()
         return [user.json() for user in users]
 
+    def update(id, data):
+        user = User.query.get(id)
+
+        user = User(
+            id = id,
+            name = data["name"],
+            email = data["email"],
+            password = data["password"],
+            created_at = user.created_at,
+            updated_at=datetime.datetime.now(tz=datetime.timezone.utc)
+        )
+        db.session.commit()
+        return user
+
     @staticmethod
     def get_user_by_id(id):
         return User.query.get(id)
