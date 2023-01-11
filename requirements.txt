@@ -12,3 +12,4 @@ PyJWT==2.3.0
 marshmallow==3.16.0
 marshmallow-enum==1.5.1
 flask-bcrypt==1.0.1
+dependency_injector==4.38.0

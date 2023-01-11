@@ -7,7 +7,7 @@ from src.db.dbmodels.post import Post
 
 class PostRepository(IPostRepository):
 
-    def get_by_id(self, post_id: int) -> IPost:
+    def get_post_by_id(self, post_id: int) -> IPost:
         return Post.get_post_by_id(post_id)
 
     def get_all_posts(self) -> "list[IPost]":

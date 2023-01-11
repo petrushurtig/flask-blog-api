@@ -15,50 +15,23 @@ class Post(db.Model):
     updated_at = db.Column(db.DateTime)
     comments = db.relationship('Comment', backref='posts', lazy=True, cascade="all, delete-orphan")
 
-    @staticmethod
-    def get_all_posts():
-        posts = Post.query.all()
-        return [post.json() for post in posts]
+    @classmethod
+    def get_post_by_id(cls, post_id: int) -> "Post":
+        return cls.query.filter_by(id=post_id).first()
 
-    @staticmethod
-    def get_post_by_id(id):
-        return Post.query.get(id)
-
-    @staticmethod
-    def add_one_to_views(id):
-        post = Post.query.get(id)
-        post.views += 1
-        db.session.commit()
-        return post
-
-    @staticmethod
-    def get_posts_by_user_id(user_id):
-        return Post.query.filter_by(user_id=user_id).all()
+    @classmethod
+    def get_all_posts(cls) -> "list[Post]":
+        return cls.query.all()
 
     def save(self):
         db.session.add(self)
         db.session.commit()
 
-    def update(post_id, data):
-        post = Post.query.get(post_id)
-
-        post = Post(
-        id= post_id,
-        title = data["title"],
-        content = data["title"],
-        user_id= post.user_id,
-        views= post.views,
-        created_at= post.created_at,
-        updated_at=datetime.datetime.now(tz=datetime.timezone.utc)
-        )
-        db.session.commit()
-        return post
-
     def delete(self):
         db.session.delete(self)
         db.session.commit()
 
-    def json(self):
+    def json(self) -> dict:
         created_at = self.created_at
         updated_at = self.updated_at
 
@@ -84,3 +57,31 @@ class Post(db.Model):
                 json_dict["comments"].append(comment.json())
 
         return json_dict
+
+""""
+    def update(post_id, data):
+        post = Post.query.get(post_id)
+
+        post = Post(
+        id= post_id,
+        title = data["title"],
+        content = data["title"],
+        user_id= post.user_id,
+        views= post.views,
+        created_at= post.created_at,
+        updated_at=datetime.datetime.now(tz=datetime.timezone.utc)
+        )
+        db.session.commit()
+        return post
+
+    @staticmethod
+    def add_one_to_views(id):
+        post = Post.query.get(id)
+        post.views += 1
+        db.session.commit()
+        return post
+
+    @staticmethod
+    def get_posts_by_user_id(user_id):
+        return Post.query.filter_by(user_id=user_id).all()
+"""

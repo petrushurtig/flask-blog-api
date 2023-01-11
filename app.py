@@ -5,13 +5,14 @@ from flasgger import Swagger
 from flask import redirect
 
 from src.db.config.db import db, bcrypt
-from app_source import app
+from src.dependency.containers import Container
 
 from src.web.routes import (
     user_routes,
     post_routes,
     comment_routes
 )
+from app_source import app
 
 from src.db.dbmodels import * 
 
@@ -35,6 +36,16 @@ swagger = Swagger(app, template_file="api.yml")
 
 bcrypt.init_app(app)
 db.init_app(app)
+
+container = Container()
+app.container = container
+container.wire(
+    modules=[
+        user_routes,
+        post_routes,
+        comment_routes
+    ]
+)
 
 @app.route("/")
 def hello_world():

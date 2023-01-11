@@ -1,22 +1,25 @@
 import datetime
 from flask import Blueprint, request, jsonify
-from flasgger import swag_from
+from dependency_injector.wiring import inject, Provide
 
+from app_source import app
 from src.db.dbmodels.post import Post
 from src.db.dbmodels.user import User
+from src.interfaces.models.user import IUser
+from src.interfaces.models.post import IPost
+from src.db.services.post_service import PostService
 from src.shared.auth import auth_required
-from app_source import app
+from src.dependency.containers import Container
 
 blueprint = Blueprint("post_api", __name__)
 
 @blueprint.route("/", methods=["GET"])
-def get_all_posts():
+@inject
+def get_all_posts(
+    post_service: PostService = Provide[Container.post_service]
+):
     try:
-        posts = Post.get_all_posts()
-        posts_list = []
-
-        for post in posts:
-            posts_list.append(post)
+        posts = post_service.get_all_posts()
         
         return jsonify(posts), 200
     except Exception as e:
@@ -25,19 +28,21 @@ def get_all_posts():
         return jsonify({"message": "Server error"}), 500
 
 @blueprint.route("/<post_id>", methods=["GET"])
-def get_post_by_id(post_id):
+@inject
+def get_post_by_id(
+    post_id: int,
+    post_service: PostService = Provide[Container.post_service]
+):
     try:
-        post = Post.get_post_by_id(post_id)
-
+        post: IPost = post_service.get_post_by_id(post_id)
         if not post:
             return jsonify({"message": "Post not found"}), 404
 
-        #increment post.views by 1
-        post = Post.add_one_to_views(post_id)
-
         return jsonify(post.json()), 200
+
     except Exception as e:
-        msg = {"message": "Server error"}
+        app.logger.info(e)
+        msg = {"message": "Server error e"}
         return jsonify(msg), 500
 
 @blueprint.route("/", methods=["POST"])
