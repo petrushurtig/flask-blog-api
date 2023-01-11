@@ -1,0 +1,112 @@
+#Swagger
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+paths:
+  /users:
+    get:
+      summary: Get a list of users
+      responses:
+        200:
+          description: Success
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+    post:
+      summary: Create a new user
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+      responses:
+        201:
+          description: Success
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+  /users/{user_id}:
+    get:
+      summary: Get a specific user
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: The ID of the user
+      responses:
+        200:
+          description: Success
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+    put:
+      summary: Update a specific user
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: The ID of the user
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+      responses:
+        200:
+          description: Success
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+    delete:
+      summary: Delete a specific user
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: The ID of the user
+      responses:
+        204:
+          description: Success

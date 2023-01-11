@@ -1,5 +1,6 @@
 import datetime
 from flask import Blueprint, request, jsonify
+from flasgger import swag_from
 
 from src.db.dbmodels.post import Post
 from src.db.dbmodels.user import User
