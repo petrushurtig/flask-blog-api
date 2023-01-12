@@ -9,6 +9,11 @@ class PostRepository(IPostRepository):
 
     def get_post_by_id(self, post_id: int) -> IPost:
         return Post.get_post_by_id(post_id)
+    
+    def increment_views(self, post_id: int):
+        post = self.get_post_by_id(post_id)
+        post.views += 1
+        db.session.commit()
 
     def get_all_posts(self) -> "list[IPost]":
         return Post.get_all_posts()

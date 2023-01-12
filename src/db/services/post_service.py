@@ -13,6 +13,14 @@ class PostService(IPostService):
 
     def get_post_by_id(self, post_id: int) -> IPost:
         return self._post_repo.get_post_by_id(post_id)
+    
+    def increment_views(self, post_id: int):
+        try:
+            self._post_repo.increment_views(post_id)
+        except Exception as e:
+            msg = ("Error when calling PostService.increment_views: %\n" % e)
+            raise Exception(msg)
+
 
     def get_all_posts(self) -> "list[dict]":
         posts: "list[IPost]" = self._post_repo.get_all_posts()

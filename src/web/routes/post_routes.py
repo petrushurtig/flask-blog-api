@@ -8,6 +8,7 @@ from src.db.dbmodels.user import User
 from src.interfaces.models.user import IUser
 from src.interfaces.models.post import IPost
 from src.db.services.post_service import PostService
+from src.db.repositories.post_repository import PostRepository
 from src.shared.auth import auth_required
 from src.dependency.containers import Container
 
@@ -34,6 +35,9 @@ def get_post_by_id(
     post_service: PostService = Provide[Container.post_service]
 ):
     try:
+        #add +1 to post.views every time it is fetched
+        post_service.increment_views(post_id)
+
         post: IPost = post_service.get_post_by_id(post_id)
         if not post:
             return jsonify({"message": "Post not found"}), 404
@@ -46,31 +50,19 @@ def get_post_by_id(
         return jsonify(msg), 500
 
 @blueprint.route("/", methods=["POST"])
+@inject
 @auth_required()
-def create_post(user: User):
+def create_post(
+    user: User,
+    post_service: PostService = Provide[Container.post_service]
+):
     try:
         post_data = request.get_json()
-
-        if "title" not in post_data:
-            msg = {"message": "Title missing"}
-            return jsonify(msg, post_data), 400
+        post = post_service.create_post(user.id, post_data)
         
-        if "content" not in post_data:
-            msg = {"message": "Content missing"}
-            return jsonify(msg, post_data), 400
-
-        post = Post(
-            title = post_data["title"],
-            content = post_data["title"],
-            user_id=user.id,
-            created_at=datetime.datetime.now(tz=datetime.timezone.utc)
-        )
-
-        post.save()
-
-        return jsonify(post.json())
+        return jsonify(post.json()), 201
     except Exception as e:
-        msg = {"message": "Error when creating post"}
+        msg = {"message": "Server error"}
         return jsonify(msg), 500
 
 @blueprint.route("/<post_id>", methods=["PUT"])
