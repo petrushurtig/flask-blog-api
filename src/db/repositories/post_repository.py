@@ -18,18 +18,21 @@ class PostRepository(IPostRepository):
     def get_all_posts(self) -> "list[IPost]":
         return Post.get_all_posts()
 
+    def get_posts_by_user_id(self, user_id: int) -> "list[IPost]":
+        return Post.get_user_posts(user_id)
+
     def create_post(self, user_id: int, post_data: dict) -> IPost:
 
-        post = Post(
-            user_id = user_id,
-            created_at = datetime.datetime.now(tz=datetime.timezone.utc)
-        )
+        post = Post()
         
         if "title" in post_data:
             post.title = post_data["title"]
 
         if "content" in post_data:
             post.content = post_data["content"]
+        
+        post.user_id = user_id,
+        post.created_at = datetime.datetime.now(tz=datetime.timezone.utc)
         
         post.save()
 
@@ -47,6 +50,8 @@ class PostRepository(IPostRepository):
 
             if "content" in post_data:
                 post.content = post_data["content"]
+
+            post.updated_at = datetime.datetime.now(tz=datetime.timezone.utc)
 
             db.session.commit()
 

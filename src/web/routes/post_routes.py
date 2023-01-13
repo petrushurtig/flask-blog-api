@@ -66,12 +66,16 @@ def create_post(
         return jsonify(msg), 500
 
 @blueprint.route("/<post_id>", methods=["PUT"])
+@inject
 @auth_required()
-def update_post(user: User, post_id: int):
-
+def update_post(
+    user: User, 
+    post_id: int,
+    post_service: PostService = Provide[Container.post_service] 
+):
     try:
         post_data = request.get_json()
-        post = Post.get_post_by_id(post_id)
+        post: IPost = post_service.get_post_by_id(post_id)
 
         if not post:
             msg = {"message": "Post not found"}
@@ -81,20 +85,25 @@ def update_post(user: User, post_id: int):
             msg = {"message": "Unauthorized"}
             return jsonify(msg), 401
 
-        updated_post = Post.update(post_id, post_data)
+        post: IPost = post_service.update_post(post_id, post_data)
     
-        return jsonify(updated_post.json()), 200
+        return jsonify(post.json()), 200
 
     except Exception as e:
         app.logger.info(e)
         return jsonify({"message": "Server error"}), 500
 
 @blueprint.route("/<post_id>", methods=["DELETE"])
+@inject
 @auth_required()
-def delete_post(user: User, post_id: int):
+def delete_post(
+    user: User, 
+    post_id: int,
+    post_service: PostService = Provide[Container.post_service]
+    ):
 
     try:
-        post = Post.get_post_by_id(post_id)
+        post: IPost = post_service.get_post_by_id(post_id)
 
         if not post:
             msg = {"message": "Post not found"}
@@ -104,7 +113,7 @@ def delete_post(user: User, post_id: int):
             msg = {"message": "Unauthorized"}
             return jsonify(msg), 401
         
-        post.delete()
+        post: IPost = post_service.delete_post(post_id)
 
         return jsonify({"message": "Removed post"})
 

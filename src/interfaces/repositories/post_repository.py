@@ -10,6 +10,9 @@ class IPostRepository:
     def get_all_posts(self) -> "list[IPost]":
         raise NotImplementedError
 
+    def get_posts_by_user_id(self) -> "list[IPost]":
+        raise NotImplementedError
+
     def create_post(self, user_id: int, post_data: dict) -> IPost:
         raise NotImplementedError
 

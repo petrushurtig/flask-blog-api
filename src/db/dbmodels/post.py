@@ -1,5 +1,4 @@
 import datetime
-from marshmallow import fields, Schema
 
 from src.db.config.db import db
 
@@ -22,6 +21,10 @@ class Post(db.Model):
     @classmethod
     def get_all_posts(cls) -> "list[Post]":
         return cls.query.all()
+
+    @classmethod
+    def get_user_posts(cls, user_id: int) -> "list[Post]":
+        return cls.query.filter_by(user_id=user_id).all()
 
     def save(self):
         db.session.add(self)

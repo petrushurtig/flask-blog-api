@@ -11,6 +11,9 @@ class IPostService:
     def get_all_posts(self) -> "list[IPost]":
         raise NotImplementedError
 
+    def get_user_posts(self) -> "list[IPost]":
+        raise NotImplementedError
+
     def create_post(self, user_id: int, post_data: dict) -> IPost:
         raise NotImplementedError
     

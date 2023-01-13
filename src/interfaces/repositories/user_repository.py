@@ -4,6 +4,9 @@ class IUserRepository:
     def get_by_id(self, user_id: int) -> IUser:
         raise NotImplementedError
 
+    def get_user_by_email(self, email: str) -> IUser:
+        raise NotImplementedError
+
     def get_all_users(self) -> "list[IUser]":
         raise NotImplementedError
 

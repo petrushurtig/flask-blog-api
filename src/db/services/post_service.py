@@ -31,6 +31,9 @@ class PostService(IPostService):
 
         return posts_list
 
+    def get_user_posts(self, user_id: int) -> "list[dict]":
+        return self._post_repo.get_posts_by_user_id(user_id)
+
     def create_post(self, user_id: str, post_data: dict) -> IPost:
         post: IPost = self._post_repo.create_post(user_id, post_data)
         
