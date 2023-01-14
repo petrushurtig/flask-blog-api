@@ -22,10 +22,6 @@ class Container(containers.DeclarativeContainer):
 
     post_repo = providers.Factory(PostRepository)
 
-    post_service = providers.Factory(
-        PostService, post_repo=post_repo
-    )
-
     user_repo = providers.Factory(UserRepository)
     role_repo = providers.Factory(RoleRepository)
     auth_repo = providers.Factory(AuthRepository)
@@ -35,6 +31,12 @@ class Container(containers.DeclarativeContainer):
     comment_service = providers.Factory(
         CommentService,
         comment_repo=comment_repo,
+    )
+
+    post_service = providers.Factory(
+        PostService, 
+        post_repo=post_repo,
+        comment_service=comment_service,
     )
 
     user_service = providers.Factory(

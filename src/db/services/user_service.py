@@ -57,7 +57,7 @@ class UserService:
 
         if posts and len(posts):
             for post in posts:
-                if not self._post_service.delete_post(post.id, user):
+                if not self._post_service.delete_post(post.id):
                     raise Exception("Couldn't delete posts when deleting user")
         
         return self._user_repository.delete_user(user_id)

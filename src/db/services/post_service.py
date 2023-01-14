@@ -2,14 +2,18 @@ from src.interfaces.models.post import IPost
 from src.interfaces.models.user import IUser
 from src.interfaces.services.post_service import IPostService
 from src.interfaces.repositories.post_repository import IPostRepository
+from src.db.services.comment_service import CommentService
 
 from app_source import app
 
 class PostService(IPostService):
     def __init__(
-        self, post_repo: IPostRepository
+        self, 
+        post_repo: IPostRepository,
+        comment_service: CommentService,
     ):
         self._post_repo = post_repo
+        self._comment_service = comment_service
 
     def get_post_by_id(self, post_id: int) -> IPost:
         return self._post_repo.get_post_by_id(post_id)
@@ -48,6 +52,13 @@ class PostService(IPostService):
         return self._post_repo.get_posts_by_user_id(user_id)
 
     def create_post(self, user_id: str, post_data: dict) -> IPost:
+        
+        if "title" not in post_data:
+            raise Exception("Title is required")
+
+        if "content" not in post_data:
+            raise Exception("Content is required")
+
         post: IPost = self._post_repo.create_post(user_id, post_data)
         
         return post
@@ -61,9 +72,14 @@ class PostService(IPostService):
             msg = ("Error when calling PostService.update_post: %\n" % e)
             raise Exception(msg)
 
-    def delete_post(self, post_id: int, user: IUser) -> bool:
+    def delete_post(self, post_id: int) -> bool:
         try:
             #delete post comments
+            comments = self._comment_service.get_post_comments(post_id)
+
+            if comments and len(comments):
+                for comment in comments:
+                    self._comment_service.delete_comment(comment.id)
 
             self._post_repo.delete_post(post_id)
 

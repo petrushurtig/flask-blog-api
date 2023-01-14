@@ -24,6 +24,11 @@ class CommentService:
     def get_comment_by_id(self, comment_id: int) -> IComment:
         return self._comment_repo.get_by_id(comment_id)
 
+    def get_post_comments(self, post_id: int) -> "list[IComment]":
+        comments: "list[IComment]" = self._comment_repo.get_post_comments_by_id(post_id)
+
+        return comments
+
     def create_comment(self, comment_data: dict) -> "list[IComment]":
         comment: IComment = self._comment_repo.create_comment(comment_data)
 

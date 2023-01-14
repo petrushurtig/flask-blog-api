@@ -62,6 +62,7 @@ def create_post(
         
         return jsonify(post.json()), 201
     except Exception as e:
+        app.logger.info(e)
         msg = {"message": "Server error"}
         return jsonify(msg), 500
 
@@ -113,9 +114,9 @@ def delete_post(
             msg = {"message": "Unauthorized"}
             return jsonify(msg), 401
         
-        post: IPost = post_service.delete_post(post_id)
+        deleted = post_service.delete_post(post_id)
 
-        return jsonify({"message": "Removed post"})
+        return jsonify({"deleted": deleted})
 
     except Exception as e:
         app.logger.info(e)

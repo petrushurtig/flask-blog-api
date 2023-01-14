@@ -23,13 +23,10 @@ class PostRepository(IPostRepository):
 
     def create_post(self, user_id: int, post_data: dict) -> IPost:
 
-        post = Post()
-        
-        if "title" in post_data:
-            post.title = post_data["title"]
-
-        if "content" in post_data:
-            post.content = post_data["content"]
+        post = Post(
+            title=post_data["title"],
+            content=post_data["content"]
+        )
         
         post.user_id = user_id,
         post.created_at = datetime.datetime.now(tz=datetime.timezone.utc)
@@ -63,7 +60,7 @@ class PostRepository(IPostRepository):
 
     def delete_post(self, post_id: int) -> bool:
         try:
-            post: Post = self.get_by_id(post_id)
+            post: Post = Post.get_post_by_id(post_id)
 
             if not post:
                 raise Exception("Post not found")

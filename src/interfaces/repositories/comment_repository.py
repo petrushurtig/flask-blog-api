@@ -7,6 +7,9 @@ class ICommentRepository:
     def get_all_comments(self) -> "list[IComment]":
         raise NotImplementedError
 
+    def get_post_comments_by_id(self, post_id: int) -> "list[IComment]":
+        raise NotImplementedError
+
     def create_comment(self, post_id: int, comment_data: dict) -> IComment:
         raise NotImplementedError
 

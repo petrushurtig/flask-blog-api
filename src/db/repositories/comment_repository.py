@@ -12,6 +12,9 @@ class CommentRepository(ICommentRepository):
     def get_all_comments(self) -> "list[IComment]":
         return Comment.get_all_comments()
 
+    def get_post_comments_by_id(self, post_id: int) -> "list[IComment]":
+        return Comment().get_comments_by_post_id(post_id)
+
     def create_comment(self, comment_data: dict) -> IComment:
         comment = Comment(
             content = comment_data["content"],
