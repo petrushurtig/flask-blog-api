@@ -8,7 +8,7 @@ from app_source import app
 from src.interfaces.models.user import IUser
 from src.db.services.user_service import UserService
 from src.dependency.containers import Container
-from src.shared.auth import Auth, auth_required
+from src.web.middleware.auth_middleware import auth_required
 
 
 user_api = Blueprint('users', __name__)

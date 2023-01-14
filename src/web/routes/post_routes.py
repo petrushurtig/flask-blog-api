@@ -9,7 +9,7 @@ from src.interfaces.models.user import IUser
 from src.interfaces.models.post import IPost
 from src.db.services.post_service import PostService
 from src.db.repositories.post_repository import PostRepository
-from src.shared.auth import auth_required
+from src.web.middleware.auth_middleware import auth_required
 from src.dependency.containers import Container
 
 blueprint = Blueprint("post_api", __name__)

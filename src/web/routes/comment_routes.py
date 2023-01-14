@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify
 from src.db.dbmodels.comment import Comment
 from src.db.dbmodels.post import Post
 from src.db.dbmodels.user import User
-from src.shared.auth import auth_required
+from src.web.middleware.auth_middleware import auth_required
 from app_source import app
 
 blueprint = Blueprint("comment_api", __name__)
