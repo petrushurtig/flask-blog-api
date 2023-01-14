@@ -29,6 +29,24 @@ class CommentService:
 
         return comment
 
+    def update_comment(self, comment_id: int, comment_data: dict) -> IComment:
+        try:
+            comment: IComment = self._comment_repo.update_comment(comment_id, comment_data)
+
+            return comment
+        except Exception as e:
+            msg = ("Error when calling CommentService.update_comment: %s\n" % e)
+            raise Exception(msg)
+
+    def delete_comment(self, comment_id: int) -> bool:
+        try:
+            self._comment_repo.delete_comment(comment_id)
+
+            return True
+        except Exception as e:
+            msg = ("Error when calling CommentService.delete_comment: %s\n" % e)
+            raise Exception(msg)
+
     
 
         

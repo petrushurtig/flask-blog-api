@@ -19,7 +19,7 @@ class PostRepository(IPostRepository):
         return Post.get_all_posts()
 
     def get_posts_by_user_id(self, user_id: int) -> "list[IPost]":
-        return Post.get_user_posts(user_id)
+        return Post.get_posts_by_user_id(user_id)
 
     def create_post(self, user_id: int, post_data: dict) -> IPost:
 

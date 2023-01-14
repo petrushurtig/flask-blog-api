@@ -7,6 +7,7 @@ from flask_bcrypt import generate_password_hash
 from app_source import app
 from src.interfaces.models.user import IUser
 from src.db.services.user_service import UserService
+from src.db.services.post_service import PostService
 from src.dependency.containers import Container
 from src.web.middleware.auth_middleware import auth_required
 
@@ -32,9 +33,26 @@ def create(
 
         return jsonify({"message": "Server error"}), 500   
 
-    #token = Auth.generate_token(ser_data.get('id'))
+@blueprint.route('/<user_id>/posts', methods=['GET'])
+@inject
+def get_user_posts(
+    user_id: int,
+    user_service: UserService = Provide[Container.user_service],
+    post_service: PostService = Provide[Container.post_service]
+):
+    try:
+        user: IUser = user_service.find_by_id(user_id)
 
-    #return custom_response({'jwt_token': token}, 201)
+        if not user:
+            return jsonify({"message": "user not found"}), 404
+
+        posts = post_service.get_user_posts_json(user.id)
+        return jsonify(posts), 200
+    except Exception as e:
+        app.logger.info(e)
+
+        return jsonify({"message": "Server error"}), 500
+
 
 @blueprint.route('/profile', methods=['GET'])
 @inject

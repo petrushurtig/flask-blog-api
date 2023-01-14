@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 
 class IPost:
     id: int
@@ -8,6 +9,8 @@ class IPost:
     views: int
     created_at: datetime
     updated_at: datetime
+    user: Any
+    comments: Any
 
     def json(self):
         raise NotImplementedError

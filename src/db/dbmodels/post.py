@@ -23,7 +23,7 @@ class Post(db.Model):
         return cls.query.all()
 
     @classmethod
-    def get_user_posts(cls, user_id: int) -> "list[Post]":
+    def get_posts_by_user_id(cls, user_id: int) -> "list[Post]":
         return cls.query.filter_by(user_id=user_id).all()
 
     def save(self):
@@ -58,7 +58,7 @@ class Post(db.Model):
 
             for comment in self.comments:
                 json_dict["comments"].append(comment.json())
-
+    
         return json_dict
 
 """"

@@ -31,6 +31,19 @@ class PostService(IPostService):
 
         return posts_list
 
+    def get_user_posts_json(self, user_id: int) -> "list[dict]":
+        try:
+            posts: "list[IPost]" = self._post_repo.get_posts_by_user_id(user_id)
+            posts_list: "list[dict]" = []
+
+            for post in posts:
+                posts_list.append(post.json())
+
+            return posts_list
+        except Exception as e:
+            app.logger.info(e)
+            return "error"
+
     def get_user_posts(self, user_id: int) -> "list[dict]":
         return self._post_repo.get_posts_by_user_id(user_id)
 

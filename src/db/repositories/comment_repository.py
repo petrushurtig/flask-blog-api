@@ -52,8 +52,7 @@ class CommentRepository(ICommentRepository):
             if not comment:
                 raise Exception("Comment not found")
 
-            db.session.delete(comment)
-            db.session.commit()
+            comment.delete()
 
             return comment
 
