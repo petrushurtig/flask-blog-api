@@ -9,6 +9,7 @@ from src.db.repositories.role_repository import RoleRepository
 from src.db.services.post_service import PostService
 from src.db.services.user_service import UserService
 from src.db.services.auth_service import AuthService
+from src.db.services.comment_service import CommentService
 from src.db.jwt.jwt_token_manager import JwtTokenManager
 
 from src.tools.seed import Seed
@@ -31,6 +32,10 @@ class Container(containers.DeclarativeContainer):
 
     comment_repo = providers.Factory(CommentRepository)
 
+    comment_service = providers.Factory(
+        CommentService,
+        comment_repo=comment_repo,
+    )
 
     user_service = providers.Factory(
         UserService,
@@ -42,7 +47,7 @@ class Container(containers.DeclarativeContainer):
 
     auth_service = providers.Factory(
         AuthService,
-        auth_repos=auth_repo,
+        auth_repo=auth_repo,
         token_manager=jwt_token_manager
     )
 

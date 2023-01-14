@@ -28,7 +28,8 @@ def login(
 
         try:
             user_tokens = auth_service.login(email, password)
-        except Exception:
+        except Exception as e:
+            app.logger.info(e)
             msg = {"message": "Invalid credentials"}
             return jsonify(msg), 401
 

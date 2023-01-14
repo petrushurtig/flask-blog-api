@@ -15,7 +15,7 @@ class User(db.Model):
     password = db.Column(db.String(300), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.now(tz=datetime.timezone.utc))
     updated_at = db.Column(db.DateTime(timezone=True), onupdate=datetime.datetime.now(tz=datetime.timezone.utc))
-    posts = db.relationship('Post', backref='users', lazy=True)
+    posts = db.relationship('Post', backref='users', lazy=True, cascade="all, delete-orphan")
     roles = db.relationship('Role', secondary=user_roles, backref=db.backref("users", lazy=True))
 
     @classmethod

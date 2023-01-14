@@ -1,22 +1,28 @@
 import datetime
 from flask import Blueprint, request, jsonify
+from dependency_injector.wiring import inject, Provide
 
 from src.db.dbmodels.comment import Comment
 from src.db.dbmodels.post import Post
 from src.db.dbmodels.user import User
+from src.interfaces.models.user import IUser
+from src.interfaces.repositories.comment_repository import ICommentRepository
+from src.db.services.comment_service import CommentService
+from src.db.services.post_service import PostService
 from src.web.middleware.auth_middleware import auth_required
+from src.dependency.containers import Container
 from app_source import app
 
 blueprint = Blueprint("comment_api", __name__)
 
 @blueprint.route("/", methods=["GET"])
-def get_all_comments():
+@inject
+#admin_required
+def get_all_comments(
+    comment_service: CommentService = Provide[Container.comment_service]
+):
     try:
-        comments = Comment.get_all_comments()
-        comments_list = []
-
-        for comment in comments:
-            comments_list.append(comment)
+        comments = comment_service.get_all_comments()
         
         return jsonify(comments), 200
     except Exception as e:
@@ -25,9 +31,14 @@ def get_all_comments():
         return jsonify({"message": "Server error"}), 500
 
 @blueprint.route("/<comment_id>", methods=["GET"])
-def get_comment_by_id(comment_id):
+@inject
+@auth_required()
+def get_comment_by_id(
+    comment_id: int,
+    comment_service: CommentService = Provide[Container.comment_service]
+):
     try:
-        comment = Comment.get_comment_by_id(comment_id)
+        comment = comment_service.get_comment_by_id(comment_id)
 
         if not comment:
             return jsonify({"message": "Comment not found"}), 404
@@ -38,10 +49,16 @@ def get_comment_by_id(comment_id):
         return jsonify(msg), 500
 
 @blueprint.route("/<post_id>", methods=["POST"])
-def add_comment_to_post(post_id):
+@inject
+@auth_required()
+def add_comment_to_post(
+    user: IUser,
+    post_id: str,
+    comment_service: CommentService = Provide[Container.comment_service],
+    post_service: PostService = Provide[Container.post_service]
+):
     try:
-
-        post = Post.get_post_by_id(post_id)
+        post = post_service.get_post_by_id(post_id)
 
         if not post:
             return jsonify({"message": "Post not found"}), 404
@@ -52,21 +69,14 @@ def add_comment_to_post(post_id):
             msg = {"message": "Content missing"}
             return jsonify(msg, comment_data), 400
 
-        if "username" not in comment_data:
-            msg = {"message": "Username missing"}
-            return jsonify(msg, comment_data), 400
+        comment_data["post_id"] = post.id
+        comment_data["user_id"] = user.id
 
-        comment = Comment(
-            content = comment_data["content"],
-            username = comment_data["username"],
-            post_id=post.id,
-            created_at=datetime.datetime.now(tz=datetime.timezone.utc)
-        )
-        
-        comment.save()
-
+        comment = comment_service.create_comment(comment_data)
+    
         return jsonify(comment.json())
     except Exception as e:
+        app.logger.info(e)
         msg = {"message": "Error when creating comment"}
         return jsonify(msg), 500
 

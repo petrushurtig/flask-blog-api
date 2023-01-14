@@ -26,11 +26,11 @@ app.config["SWAGGER"] = {"title": "Blog API"}
 
 #Register routes
 
-app.register_blueprint(user_routes.user_api, url_prefix='/api/v1/users')
-app.register_blueprint(auth_routes.blueprint, url_prefix='/api/v1/auth')
-app.register_blueprint(post_routes.blueprint, url_prefix='/api/v1/posts')
-app.register_blueprint(comment_routes.blueprint, url_prefix='/api/v1/comments')
-app.register_blueprint(admin_user_routes.blueprint, url_prefix='/api/v1/admin/users')
+app.register_blueprint(user_routes.blueprint, url_prefix='/api/users')
+app.register_blueprint(auth_routes.blueprint, url_prefix='/api/auth')
+app.register_blueprint(post_routes.blueprint, url_prefix='/api/posts')
+app.register_blueprint(comment_routes.blueprint, url_prefix='/api/comments')
+app.register_blueprint(admin_user_routes.blueprint, url_prefix='/api/admin/users')
 @app.route('/docs')
 def documentation():
     return redirect('/static/docs.html')

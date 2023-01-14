@@ -11,12 +11,12 @@ class AuthService:
         auth_repo: IAuthRepository,
         token_manager: ITokenManager,
     ):
-        self._auth_repo = auth_repo,
+        self._auth_repo = auth_repo
         self._token_manager = token_manager
 
     def login(self, email: str, password: str) -> dict:
         try:
-            user: IUser = self._auth_repo.get_user_by_credential(email, password)
+            user: IUser = self._auth_repo.get_user_by_credentials(email, password)
 
             if not user:
                 raise Exception("User not found")

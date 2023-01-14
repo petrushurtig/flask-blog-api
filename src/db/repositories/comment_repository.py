@@ -12,14 +12,15 @@ class CommentRepository(ICommentRepository):
     def get_all_comments(self) -> "list[IComment]":
         return Comment.get_all_comments()
 
-    def create_comment(self, post_id: int, comment_data: dict) -> IComment:
+    def create_comment(self, comment_data: dict) -> IComment:
         comment = Comment(
-            username = comment_data["username"],
-            content = comment_data["content"]
+            content = comment_data["content"],
+            post_id = comment_data["post_id"],
+            user_id = comment_data["user_id"]
         )
 
         comment.created_at = datetime.datetime.now(tz=datetime.timezone.utc)
-        comment.create()
+        comment.save()
 
         return comment
 
@@ -30,13 +31,10 @@ class CommentRepository(ICommentRepository):
             if not comment:
                 raise Exception("Comment not found")
 
-            if "username" not in comment_data:
-                raise Exception("username required")
 
             if "content" not in comment_data:
                 raise Exception("content required")
 
-            comment.username = comment_data["username"]
             comment.content = comment_data["content"]
             comment.updated_at = datetime.datetime.now(tz=datetime.timezone.utc)
 

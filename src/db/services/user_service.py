@@ -40,18 +40,14 @@ class UserService:
         if "password" not in user_data:
             raise Exception("password is required")
         
-   
-        email = user_data["email"]
-        password = user_data["password"]
-
-        user_exist = self._user_repo.get_user_by_email(email)
+        
+        user_exist = self._user_repo.get_user_by_email(user_data["email"])
 
         if user_exist:
             raise Exception("Email already exists")
         
-        password_hash = generate_password_hash(password).decode("utf-8")
+        user_data["password"] = generate_password_hash(user_data["password"]).decode("utf-8")
     
-        user_data["passowrd"] = password_hash
         user: IUser = self._user_repo.create_user(user_data)
         
         return user

@@ -11,11 +11,11 @@ from src.dependency.containers import Container
 from src.web.middleware.auth_middleware import auth_required
 
 
-user_api = Blueprint('users', __name__)
+blueprint = Blueprint('users', __name__)
 
 #Register user
 
-@user_api.route('/', methods=['POST'])
+@blueprint.route('/', methods=['POST'])
 @inject
 def create(
     user_service: UserService = Provide[Container.user_service]
@@ -35,6 +35,17 @@ def create(
     #token = Auth.generate_token(ser_data.get('id'))
 
     #return custom_response({'jwt_token': token}, 201)
+
+@blueprint.route('/profile', methods=['GET'])
+@inject
+@auth_required()
+def get_user_profile(
+    user: IUser,
+    user_service: UserService = Provide[Container.user_service]
+):
+
+    return
+
 
 """"
 #Get users
