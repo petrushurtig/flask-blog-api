@@ -5,11 +5,11 @@ from dependency_injector.wiring import inject, Provide
 from src.interfaces.models.comment import IComment
 from src.interfaces.models.user import IUser
 from src.interfaces.repositories.comment_repository import ICommentRepository
-from src.db.services.comment_service import CommentService
-from src.db.services.post_service import PostService
+from src.services.comment_service import CommentService
+from src.services.post_service import PostService
 from src.web.middleware.auth_middleware import auth_required
-from src.dependency.containers import Container
-from app_source import app
+from src.common.containers import Container
+from app import app
 
 blueprint = Blueprint("comment_api", __name__)
 

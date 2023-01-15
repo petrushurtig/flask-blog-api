@@ -2,10 +2,11 @@ import os
 from dotenv import load_dotenv
 from flask_migrate import Migrate
 from flasgger import Swagger
-from flask import redirect
+from flask import Flask, redirect
 
+app = Flask(__name__)
 from src.db.config.db import db, bcrypt
-from src.dependency.containers import Container
+from src.common.containers import Container
 
 from src.web.routes import (
     user_routes,
@@ -14,11 +15,12 @@ from src.web.routes import (
     auth_routes,
     admin_user_routes
 )
-from app_source import app
 
-from src.db.dbmodels import * 
+from src.db.models import * 
 
 load_dotenv()
+
+app = Flask(__name__)
 
 app.config["SQLALCHEMY_DATABASE_URI"]=os.environ["DATABASE_URL"]
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

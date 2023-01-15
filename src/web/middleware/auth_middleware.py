@@ -3,10 +3,10 @@ from dotenv import load_dotenv
 from functools import wraps
 from flask import json, Response, request, g, jsonify
 
-from app_source import app
+from app import app
 from src.interfaces.repositories.user_repository import IUserRepository
-from src.dependency.containers import Container
-from src.db.services.auth_service import AuthService
+from src.common.containers import Container
+from src.services.auth_service import AuthService
 
 def auth_required():
     def inner_decorator(func, ):

@@ -1,9 +1,9 @@
 from dependency_injector.wiring import inject, Provide
 from flask import Blueprint, jsonify, request
 
-from app_source import app
-from src.db.services.auth_service import AuthService
-from src.dependency.containers import Container
+from app import app
+from src.services.auth_service import AuthService
+from src.common.containers import Container
 
 blueprint = Blueprint("auth_api", __name__)
 

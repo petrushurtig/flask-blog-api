@@ -2,15 +2,15 @@ import datetime
 from flask import Blueprint, request, jsonify
 from dependency_injector.wiring import inject, Provide
 
-from app_source import app
-from src.db.dbmodels.post import Post
-from src.db.dbmodels.user import User
+from app import app
+from src.db.models.post import Post
+from src.db.models.user import User
 from src.interfaces.models.user import IUser
 from src.interfaces.models.post import IPost
-from src.db.services.post_service import PostService
-from src.db.repositories.post_repository import PostRepository
+from src.services.post_service import PostService
+from src.repositories.post_repository import PostRepository
 from src.web.middleware.auth_middleware import auth_required
-from src.dependency.containers import Container
+from src.common.containers import Container
 
 blueprint = Blueprint("post_api", __name__)
 
@@ -35,18 +35,20 @@ def get_post_by_id(
     post_service: PostService = Provide[Container.post_service]
 ):
     try:
-        #add +1 to post.views every time it is fetched
-        post_service.increment_views(post_id)
-
+        
         post: IPost = post_service.get_post_by_id(post_id)
         if not post:
-            return jsonify({"message": "Post not found"}), 404
+            msg = {"message": "Post not found"}
+            return jsonify(msg), 404
+
+        #add +1 to post.views every time it is fetched
+        post_service.increment_views(post_id)
 
         return jsonify(post.json()), 200
 
     except Exception as e:
         app.logger.info(e)
-        msg = {"message": "Server error e"}
+        msg = {"message": "Server error"}
         return jsonify(msg), 500
 
 @blueprint.route("/", methods=["POST"])

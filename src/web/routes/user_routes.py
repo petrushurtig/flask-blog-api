@@ -4,11 +4,11 @@ from dependency_injector.wiring import inject, Provide
 from flask_bcrypt import generate_password_hash
 
 
-from app_source import app
+from app import app
 from src.interfaces.models.user import IUser
-from src.db.services.user_service import UserService
-from src.db.services.post_service import PostService
-from src.dependency.containers import Container
+from src.services.user_service import UserService
+from src.services.post_service import PostService
+from src.common.containers import Container
 from src.web.middleware.auth_middleware import auth_required
 
 

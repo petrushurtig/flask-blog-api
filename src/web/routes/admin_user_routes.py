@@ -2,10 +2,10 @@ import datetime
 from flask import request, json, Response, Blueprint, jsonify
 from dependency_injector.wiring import inject, Provide
 
-from app_source import app
+from app import app
 from src.interfaces.models.user import IUser
-from src.dependency.containers import Container
-from src.db.services.user_service import UserService
+from src.common.containers import Container
+from src.services.user_service import UserService
 from src.web.middleware.auth_middleware import auth_required
 
 blueprint = Blueprint("admin_user_api", __name__)
