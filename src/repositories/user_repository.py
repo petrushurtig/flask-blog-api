@@ -21,6 +21,14 @@ class UserRepository(IUserRepository):
     def get_user_by_name(self, name: str) -> IUser:
         return User.get_user_by_name(name)
 
+    def is_admin_user(self, user_id: int) -> bool:
+        user = User.get_user_by_id(user_id)
+
+        if not (user.roles and len(user.roles)):
+            return False
+        
+        return any(role.type == RoleType.ADMIN for role in user.roles)
+
     def create_user(self, user_data: dict) -> IUser:
         user = User(
             name = user_data["name"],
@@ -52,6 +60,12 @@ class UserRepository(IUserRepository):
 
             if "password" in user_data:
                 user.password = user_data["password"]
+
+            if "roles" in user_data:
+                roles: "list[Role]" = self._get_roles_from_user_data(user_data)
+
+                if roles and len(roles):
+                    user.roles = roles
 
             user.updated_at = datetime.datetime.now(tz=datetime.timezone.utc)
 

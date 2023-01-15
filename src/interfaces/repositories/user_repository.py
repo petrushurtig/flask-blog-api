@@ -13,6 +13,9 @@ class IUserRepository:
     def get_all_users(self) -> "list[IUser]":
         raise NotImplementedError
 
+    def is_admin_user(self, user_id: int) -> bool:
+        raise NotImplementedError
+
     def create_user(self, user_data: dict) -> IUser:
         raise NotImplementedError
 

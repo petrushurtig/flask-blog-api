@@ -89,7 +89,7 @@ def update_user(
     try:
 
         user_data = request.get_json()
-
+        #user not found
         if "roles" in user_data:
             return jsonify({"message": "Unauthorized"}), 401
 
