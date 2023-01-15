@@ -89,11 +89,9 @@ def update_user(
     try:
 
         user_data = request.get_json()
-        
-        user: IUser = user_service.find_by_id(user.id)
 
-        if not user:
-            return jsonify({"message": "user not found"}), 404
+        if "roles" in user_data:
+            return jsonify({"message": "Unauthorized"}), 401
 
         updated_user: IUser = user_service.update_user(user.id, user_data)
 
