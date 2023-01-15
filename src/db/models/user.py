@@ -10,7 +10,7 @@ class User(db.Model):
     __tablename__= 'users'
 
     id=db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(128), nullable=False)
+    name = db.Column(db.String(128), unique=True, nullable=False)
     email = db.Column(db.String(256), unique=True, nullable=False)
     password = db.Column(db.String(300), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.now(tz=datetime.timezone.utc))
@@ -29,6 +29,10 @@ class User(db.Model):
     @classmethod
     def get_user_by_email(cls, email) -> "User":
         return cls.query.filter_by(email=email).first()
+    
+    @classmethod
+    def get_user_by_name(cls, name) -> "User":
+        return cls.query.filter_by(name=name).first()
 
     @classmethod
     def find_by_credentials(cls, email, password) -> "User":

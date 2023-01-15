@@ -43,6 +43,7 @@ class Container(containers.DeclarativeContainer):
         UserService,
         user_repo=user_repo,
         post_service=post_service,
+        comment_service=comment_service,
     )
 
     jwt_token_manager = providers.Factory(JwtTokenManager)

@@ -18,6 +18,7 @@ def get_all_users(
     user_service: UserService = Provide[Container.user_service]
 ):
     try:
+
         users = user_service.get_all_users()
 
         return jsonify(users), 200

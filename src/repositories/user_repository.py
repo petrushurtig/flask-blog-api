@@ -17,6 +17,9 @@ class UserRepository(IUserRepository):
 
     def get_user_by_email(self, email: str) -> IUser:
         return User.get_user_by_email(email)
+    
+    def get_user_by_name(self, name: str) -> IUser:
+        return User.get_user_by_name(name)
 
     def create_user(self, user_data: dict) -> IUser:
         user = User(
@@ -34,6 +37,35 @@ class UserRepository(IUserRepository):
         user.save()
 
         return user
+
+    def update_user(self, user_id: int, user_data: dict) -> IUser:
+            user: IUser = User.get_user_by_id(user_id)
+
+            if not user:
+                raise Exception("User not found")
+
+            if "name" in user_data:
+                user.name = user_data["name"]
+
+            if "email" in user_data:
+                user.email = user_data["email"]
+
+            if "password" in user_data:
+                user.password = user_data["password"]
+
+            user.updated_at = datetime.datetime.now(tz=datetime.timezone.utc)
+
+            db.session.commit()
+
+            return user
+
+    def delete_user(self, user_id: int) -> bool:
+        user: User = User.get_user_by_id(user_id)
+
+        if user:
+            user.delete()
+
+        return True
 
     def _get_roles_from_user_data(self, user_data: dict) -> "list[Role]":
         roles: "list[Role]" = []

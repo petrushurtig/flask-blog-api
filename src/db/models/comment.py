@@ -10,8 +10,8 @@ class Comment(db.Model):
     content = db.Column(db.String(200), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=False)
-    created_at = db.Column(db.DateTime)
-    updated_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.now(tz=datetime.timezone.utc))
+    updated_at = db.Column(db.DateTime(timezone=True), onupdate=datetime.datetime.now(tz=datetime.timezone.utc))
 
     @classmethod
     def get_all_comments(cls) -> "list[Comment]":
@@ -24,6 +24,10 @@ class Comment(db.Model):
     @classmethod
     def get_comments_by_post_id(cls, post_id: int) -> "list[Comment]":
         return cls.query.filter_by(post_id=post_id).all()
+    
+    @classmethod
+    def get_comments_by_user_id(cls, user_id: int) -> "list[Comment]":
+        return cls.query.filter_by(user_id=user_id).all()
 
     def save(self):
         db.session.add(self)

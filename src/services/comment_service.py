@@ -29,7 +29,12 @@ class CommentService:
 
         return comments
 
-    def create_comment(self, comment_data: dict) -> "list[IComment]":
+    def get_user_comments(self, user_id: int) -> "list[IComment]":
+        comments: "list[IComment]" = self._comment_repo.get_user_comments_by_id(user_id)
+
+        return comments
+
+    def create_comment(self, comment_data: dict) -> IComment:
         comment: IComment = self._comment_repo.create_comment(comment_data)
 
         return comment

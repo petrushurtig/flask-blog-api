@@ -10,6 +10,7 @@ from src.services.user_service import UserService
 from src.services.post_service import PostService
 from src.common.containers import Container
 from src.web.middleware.auth_middleware import auth_required
+from src.common.exceptions.request_data_exception import RequestDataException
 
 
 blueprint = Blueprint('users', __name__)
@@ -21,12 +22,15 @@ blueprint = Blueprint('users', __name__)
 def create(
     user_service: UserService = Provide[Container.user_service]
 ):
-
     try:
         user_data = request.get_json()
         user: IUser = user_service.create_user(user_data)
 
         return jsonify(user.json()), 201
+    except RequestDataException as e:
+        app.logger.info(e)
+        msg = {"message": str(e)}
+        return jsonify(msg), 400
     except Exception as e:
         app.logger.info(e)
         app.logger.info(user_data)
@@ -61,10 +65,64 @@ def get_user_profile(
     user: IUser,
     user_service: UserService = Provide[Container.user_service]
 ):
+    try:
+        user = user_service.find_by_id(user.id)
 
-    return
+        if not user:
+            return jsonify({"message": "user not found"}), 404
+
+        return jsonify(user.json())
+    except Exception as e:
+        app.logger.info(e)
+        
+        return jsonify({"message": "Server error"}), 500
 
 
+@blueprint.route('/profile', methods=['PUT'])
+@inject
+@auth_required()
+def update_user(
+    user: IUser,
+    user_service: UserService = Provide[Container.user_service]
+):
+
+    try:
+
+        user_data = request.get_json()
+        
+        user: IUser = user_service.find_by_id(user.id)
+
+        if not user:
+            return jsonify({"message": "user not found"}), 404
+
+        updated_user: IUser = user_service.update_user(user.id, user_data)
+
+        return jsonify(updated_user.json()), 200
+    except RequestDataException as e:
+        app.logger.info(e)
+        msg = {"message": str(e)}
+        return jsonify(msg), 400
+    except Exception as e:
+        app.logger.info(e)
+        return jsonify({"message": "Server error"}), 500
+    
+
+@blueprint.route('/profile', methods=['DELETE'])
+@inject
+@auth_required()
+def delete_user(
+    user: IUser,
+    user_service: UserService = Provide[Container.user_service]
+):
+
+    try:
+        deleted: bool = user_service.delete_user(user=user)
+
+        return jsonify({"deleted": True})
+    except Exception as e:
+        app.logger.info(e)
+
+        return jsonify({"message": "Server error"}), 500
 """"
 #Get users
 

@@ -14,6 +14,9 @@ class CommentRepository(ICommentRepository):
 
     def get_post_comments_by_id(self, post_id: int) -> "list[IComment]":
         return Comment().get_comments_by_post_id(post_id)
+    
+    def get_user_comments_by_id(self, user_id: int) -> "list[IComment]":
+        return Comment().get_comments_by_user_id(user_id)
 
     def create_comment(self, comment_data: dict) -> IComment:
         comment = Comment(
