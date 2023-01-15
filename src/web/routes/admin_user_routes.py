@@ -25,3 +25,20 @@ def get_all_users(
     except Exception as e:
         app.logger.info(e)
         return jsonify({"message": "Server error"}), 500
+
+@blueprint.route("/<user_id>", methods=["DELETE"])
+@inject
+@auth_required()
+def delete_user(
+    user: IUser,
+    user_id: int,
+    user_service: UserService = Provide[Container.user_service]
+):
+    try:
+        deleted: bool = user_service.delete_user(user=user, user_id=user_id)
+
+        return jsonify({"deleted": True})
+    except Exception as e:
+        app.logger.info(e)
+
+        return jsonify({"message": "Server error"}), 500

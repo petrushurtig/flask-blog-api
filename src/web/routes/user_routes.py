@@ -117,6 +117,9 @@ def delete_user(
 
     try:
         deleted: bool = user_service.delete_user(user=user)
+        
+        if not deleted:
+            return jsonify({"message": "Server error", "deleted": False}), 500
 
         return jsonify({"deleted": True})
     except Exception as e:
