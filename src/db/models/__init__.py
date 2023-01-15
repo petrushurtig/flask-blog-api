@@ -1,1 +1,1 @@
-__all__ = ['post', 'user', 'comment', 'role', 'user_roles']
+__all__ = ['post', 'user', 'comment', 'role', 'user_roles', 'tag', 'post_tags']

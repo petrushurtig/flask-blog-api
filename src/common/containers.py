@@ -5,6 +5,7 @@ from src.repositories.user_repository import UserRepository
 from src.repositories.comment_repository import CommentRepository
 from src.repositories.auth_repository import AuthRepository
 from src.repositories.role_repository import RoleRepository
+from src.repositories.tag_repository import TagRepository
 
 from src.services.post_service import PostService
 from src.services.user_service import UserService
@@ -28,6 +29,8 @@ class Container(containers.DeclarativeContainer):
 
     comment_repo = providers.Factory(CommentRepository)
 
+    tag_repo = providers.Factory(TagRepository)
+
     comment_service = providers.Factory(
         CommentService,
         comment_repo=comment_repo,
@@ -37,6 +40,7 @@ class Container(containers.DeclarativeContainer):
         PostService, 
         post_repo=post_repo,
         comment_service=comment_service,
+        tag_repo=tag_repo,
     )
 
     user_service = providers.Factory(

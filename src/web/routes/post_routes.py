@@ -143,3 +143,20 @@ def get_comments_of_post(post_id: int):
         app.logger.info(e)
         msg = {"message": "Server error"}
         return jsonify(msg), 500
+
+@blueprint.route("/search/<string:tag>", methods=["GET"])
+@inject
+def get_posts_by_tag(
+    tag: str,
+    post_service: PostService = Provide[Container.post_service]
+):
+    try:
+        posts_list = post_service.get_posts_by_tag(tag)
+
+        return jsonify(posts_list)
+
+    except Exception as e:
+        app.logger.info(e)
+        msg = {"message": "Server error"}
+        return jsonify(msg), 500
+

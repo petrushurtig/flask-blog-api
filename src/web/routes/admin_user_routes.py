@@ -37,6 +37,9 @@ def delete_user(
     try:
         deleted: bool = user_service.delete_user(user=user, user_id=user_id)
 
+        if not deleted:
+            return jsonify({"message": "Server error"}), 500
+
         return jsonify({"deleted": True})
     except Exception as e:
         app.logger.info(e)

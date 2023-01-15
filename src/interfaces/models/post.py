@@ -11,6 +11,7 @@ class IPost:
     updated_at: datetime
     user: Any
     comments: Any
+    tags: Any
 
     def json(self):
         raise NotImplementedError

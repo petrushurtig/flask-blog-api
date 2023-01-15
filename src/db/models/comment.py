@@ -1,5 +1,4 @@
 import datetime
-from marshmallow import fields, Schema
 
 from src.db.config.db import db
 

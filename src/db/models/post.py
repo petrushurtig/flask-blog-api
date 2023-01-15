@@ -1,6 +1,8 @@
 import datetime
 
 from src.db.config.db import db
+from src.db.models.post_tags import post_tags
+from src.db.models.tag import Tag
 
 class Post(db.Model):
     __tablename__= 'posts'
@@ -13,6 +15,7 @@ class Post(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.now(tz=datetime.timezone.utc))
     updated_at = db.Column(db.DateTime(timezone=True), onupdate=datetime.datetime.now(tz=datetime.timezone.utc))
     comments = db.relationship('Comment', backref='posts', lazy=True, cascade="all, delete-orphan")
+    tags = db.relationship('Tag', secondary=post_tags, backref=db.backref('posts', lazy=True))
 
     @classmethod
     def get_post_by_id(cls, post_id: int) -> "Post":
@@ -25,6 +28,10 @@ class Post(db.Model):
     @classmethod
     def get_posts_by_user_id(cls, user_id: int) -> "list[Post]":
         return cls.query.filter_by(user_id=user_id).all()
+
+    @classmethod
+    def get_posts_by_tag(cls, tag: str) -> "list[Post]":
+        return cls.query.filter(cls.tags.any(Tag.name == tag)).all()
 
     def save(self):
         db.session.add(self)
@@ -59,6 +66,12 @@ class Post(db.Model):
             for comment in self.comments:
                 json_dict["comments"].append(comment.json())
     
+        if self.tags and len(self.tags):
+            json_dict["tags"] = []
+
+            for tag in self.tags:
+                json_dict["tags"].append(tag.json())
+
         return json_dict
 
 """"

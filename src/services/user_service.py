@@ -43,9 +43,6 @@ class UserService:
 
     def create_user(self, user_data: dict) -> IUser:
 
-        if "roles" not in user_data:
-            user_data["roles"] = [RoleType.BASIC.value]
-
         if "email" not in user_data:
             raise RequestDataException("Email is required")
         
@@ -66,7 +63,7 @@ class UserService:
             raise RequestDataException("Name already exists")
         
         user_data["password"] = generate_password_hash(user_data["password"]).decode("utf-8")
-    
+        user_data["roles"] = [RoleType.BASIC.value]
         user: IUser = self._user_repo.create_user(user_data)
         
         return user

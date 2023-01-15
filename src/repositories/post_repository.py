@@ -4,6 +4,7 @@ from src.interfaces.models.post import IPost
 from src.interfaces.repositories.post_repository import IPostRepository
 from src.db.config.db import db
 from src.db.models.post import Post
+from src.db.models.tag import Tag
 
 class PostRepository(IPostRepository):
 
@@ -21,13 +22,16 @@ class PostRepository(IPostRepository):
     def get_posts_by_user_id(self, user_id: int) -> "list[IPost]":
         return Post.get_posts_by_user_id(user_id)
 
+    def get_posts_by_tag(self, tag: str) -> "list[IPost]":
+        return Post.get_posts_by_tag(tag)
+
     def create_post(self, user_id: int, post_data: dict) -> IPost:
 
         post = Post(
             title=post_data["title"],
-            content=post_data["content"]
+            content=post_data["content"],            
         )
-        
+
         post.user_id = user_id,
         post.created_at = datetime.datetime.now(tz=datetime.timezone.utc)
         
@@ -47,6 +51,9 @@ class PostRepository(IPostRepository):
 
             if "content" in post_data:
                 post.content = post_data["content"]
+
+            if "tags" in post_data:
+                post.tags = post_data["tags"]
 
             post.updated_at = datetime.datetime.now(tz=datetime.timezone.utc)
 
@@ -73,3 +80,7 @@ class PostRepository(IPostRepository):
             msg = ("Exception when calling PostRepo.delete_post %s\n" % e)
             raise Exception(msg)
         
+
+    def _get_tags_from_post_data(self, post_data: dict) -> "list[Tag]":
+        tags: "list[Tag]" = []
+

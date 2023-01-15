@@ -25,14 +25,14 @@ class UserRepository(IUserRepository):
         user = User(
             name = user_data["name"],
             email = user_data["email"],
-            password = user_data["password"]
+            password = user_data["password"],
         )
 
         roles: "list[Role]" = self._get_roles_from_user_data(user_data)
 
         if roles and len(roles):
             user.roles = roles
-
+       
         user.created_at = datetime.datetime.now(tz=datetime.timezone.utc)
         user.save()
 
