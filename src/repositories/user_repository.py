@@ -1,4 +1,7 @@
 import datetime
+import os
+from flask_bcrypt import generate_password_hash
+from dotenv import load_dotenv
 
 from src.interfaces.models.user import IUser
 from src.db.config.db import db
@@ -6,6 +9,7 @@ from src.db.models.user import User
 from src.db.models.role import Role
 from src.db.enums.role_type import RoleType
 from src.interfaces.repositories.user_repository import IUserRepository
+from src.db.enums.role_type import RoleType
 
 class UserRepository(IUserRepository):
     
@@ -95,3 +99,20 @@ class UserRepository(IUserRepository):
             roles.append(role)
 
         return roles
+
+    def init_users(self):
+        load_dotenv()
+
+        existing_admin_users: "list[User]" = User.find_by_role_type(RoleType.ADMIN)
+
+        if not existing_admin_users:
+            admin_user = User()
+            admin_user.name = os.environ["ADMIN_NAME"]
+            admin_user.email = os.environ["ADMIN_EMAIL"]
+            admin_user.password = generate_password_hash(os.environ["ADMIN_PASSWORD"])
+            admin_user.created_at=datetime.datetime.now(tz=datetime.timezone.utc)
+            admin_role = Role.find_by_type(RoleType.ADMIN)
+            admin_user.roles = [admin_role]
+            
+            admin_user.save()
+
