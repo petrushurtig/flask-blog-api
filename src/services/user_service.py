@@ -89,10 +89,15 @@ class UserService:
         return user
 
     def delete_user(self, user: IUser, user_id: int = None) -> bool:
+        
         if user_id:
             user_id = user_id
         else:
             user_id = user.id
+
+        user = self._user_repo.get_by_id(user_id)
+        if not user:
+            raise Exception("User not found")
 
         #delete user's posts
 

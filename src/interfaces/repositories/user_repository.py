@@ -24,3 +24,6 @@ class IUserRepository:
 
     def delete_user(self, user_id: int) -> bool:
         raise NotImplementedError
+
+    def init_users(self):
+        raise NotImplementedError

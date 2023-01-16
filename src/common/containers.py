@@ -60,5 +60,6 @@ class Container(containers.DeclarativeContainer):
 
     seed_command = providers.Factory(
         Seed,
-        role_repo=role_repo
+        role_repo=role_repo,
+        user_repo=user_repo
     )

@@ -3,6 +3,8 @@ from marshmallow import fields, Schema
 from flask_bcrypt import check_password_hash
 
 from src.db.models.user_roles import user_roles
+from src.db.models.role import Role
+from src.db.enums.role_type import RoleType
 from src.db.config.db import db
 from app import app
 
@@ -43,6 +45,12 @@ class User(db.Model):
 
             if correct_pass:
                 return user
+
+    #Find one user with a role type
+    @classmethod
+    def find_by_role_type(cls, role_type: RoleType) -> "list[User]":
+        role_subquery = db.session.query(Role.id).filter(Role.type == role_type)
+        return cls.query.filter(cls.roles.any(Role.id.in_(role_subquery))).all()
 
     def save(self):
         db.session.add(self)
