@@ -32,6 +32,9 @@ class PostRepository(IPostRepository):
             content=post_data["content"],            
         )
 
+        if "tags" in post_data:
+            post.tags = post_data["tags"]
+
         post.user_id = user_id,
         post.created_at = datetime.datetime.now(tz=datetime.timezone.utc)
         

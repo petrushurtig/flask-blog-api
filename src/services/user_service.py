@@ -8,6 +8,7 @@ from src.interfaces.repositories.user_repository import IUserRepository
 from src.interfaces.services.post_service import IPostService
 from src.interfaces.services.comment_service import ICommentService
 from src.common.exceptions.request_data_exception import RequestDataException
+from src.common.exceptions.user_not_found_exception import UserNotFoundException
 
 
 class UserService:
@@ -70,6 +71,11 @@ class UserService:
 
     def update_user(self, user_id: int, user_data: dict) -> IUser:
 
+        user = self._user_repo.get_by_id(user_id)
+
+        if not user:
+            raise UserNotFoundException("User not found")
+
         if "email" in user_data:
             email_exists = self._user_repo.get_user_by_email(user_data["email"])
 
@@ -97,7 +103,7 @@ class UserService:
 
         user = self._user_repo.get_by_id(user_id)
         if not user:
-            raise Exception("User not found")
+            raise UserNotFoundException("User not found")
 
         #delete user's posts
 

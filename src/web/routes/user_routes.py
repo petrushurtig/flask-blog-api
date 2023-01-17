@@ -11,6 +11,7 @@ from src.services.post_service import PostService
 from src.common.containers import Container
 from src.web.middleware.auth_middleware import auth_required
 from src.common.exceptions.request_data_exception import RequestDataException
+from src.common.exceptions.user_not_found_exception import UserNotFoundException
 
 
 blueprint = Blueprint('users', __name__)
@@ -87,15 +88,16 @@ def update_user(
 ):
 
     try:
-
         user_data = request.get_json()
-        #user not found
         if "roles" in user_data:
             return jsonify({"message": "Unauthorized"}), 401
 
         updated_user: IUser = user_service.update_user(user.id, user_data)
 
         return jsonify(updated_user.json()), 200
+    except UserNotFoundException as e:
+        msg = {"message": str(e)}
+        return jsonify(msg), 404
     except RequestDataException as e:
         app.logger.info(e)
         msg = {"message": str(e)}
