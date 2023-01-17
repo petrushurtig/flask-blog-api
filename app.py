@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from flask_migrate import Migrate
 from flasgger import Swagger
 from flask import Flask, redirect
+from flask_cors import CORS
 
 app = Flask(__name__)
 from src.db.config.db import db, bcrypt
@@ -39,6 +40,7 @@ def documentation():
 
 migrate = Migrate(app, db, compare_type=True)
 swagger = Swagger(app, template_file="api.yml")
+CORS(app, origins="*")
 
 bcrypt.init_app(app)
 db.init_app(app)
