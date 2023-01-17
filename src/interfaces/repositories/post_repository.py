@@ -7,7 +7,7 @@ class IPostRepository:
     def increment_views(self, post_id: int) -> IPost:
         raise NotImplementedError
     
-    def get_all_posts(self) -> "list[IPost]":
+    def get_all_posts(self, page: int, per_page: int):
         raise NotImplementedError
 
     def get_posts_by_user_id(self, user_id: int) -> "list[IPost]":

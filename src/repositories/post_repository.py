@@ -16,8 +16,8 @@ class PostRepository(IPostRepository):
         post.views += 1
         db.session.commit()
 
-    def get_all_posts(self) -> "list[IPost]":
-        return Post.get_all_posts()
+    def get_all_posts(self, page: int, per_page: int):
+        return Post.get_all_posts(page, per_page)
 
     def get_posts_by_user_id(self, user_id: int) -> "list[IPost]":
         return Post.get_posts_by_user_id(user_id)

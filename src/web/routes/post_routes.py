@@ -1,5 +1,5 @@
 import datetime
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, url_for
 from dependency_injector.wiring import inject, Provide
 
 from app import app
@@ -10,6 +10,7 @@ from src.interfaces.models.post import IPost
 from src.services.post_service import PostService
 from src.repositories.post_repository import PostRepository
 from src.web.middleware.auth_middleware import auth_required
+from src.common.hateoas import pagination_links
 from src.common.containers import Container
 
 blueprint = Blueprint("post_api", __name__)
@@ -20,9 +21,14 @@ def get_all_posts(
     post_service: PostService = Provide[Container.post_service]
 ):
     try:
-        posts = post_service.get_all_posts()
-        
-        return jsonify(posts), 200
+        page = request.args.get("page", 1, type=int)
+        per_page = request.args.get("per_page", 10, type=int)
+
+
+        posts = post_service.get_all_posts(page, per_page)
+
+
+        return jsonify(pagination_links(posts, page, per_page, '.get_all_posts')), 200
     except Exception as e:
         app.logger.info(e)
 

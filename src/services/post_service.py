@@ -29,14 +29,10 @@ class PostService(IPostService):
             raise Exception(msg)
 
 
-    def get_all_posts(self) -> "list[dict]":
-        posts: "list[IPost]" = self._post_repo.get_all_posts()
-        posts_list: "list[dict]" = []
-        
-        for p in posts:
-            posts_list.append(p.json())
+    def get_all_posts(self, page:int, per_page:int) -> "list[dict]":
+        posts = self._post_repo.get_all_posts(page, per_page)
 
-        return posts_list
+        return posts
 
     def get_user_posts_json(self, user_id: int) -> "list[dict]":
         try:

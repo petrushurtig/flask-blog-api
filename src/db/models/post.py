@@ -22,8 +22,8 @@ class Post(db.Model):
         return cls.query.filter_by(id=post_id).first()
 
     @classmethod
-    def get_all_posts(cls) -> "list[Post]":
-        return cls.query.all()
+    def get_all_posts(cls, page: int, per_page: int) -> "list[Post]":
+        return cls.query.paginate(page, per_page)
 
     @classmethod
     def get_posts_by_user_id(cls, user_id: int) -> "list[Post]":
@@ -41,7 +41,7 @@ class Post(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def json(self) -> dict:
+    def json(self, links: bool = False) -> dict:
         created_at = self.created_at
         updated_at = self.updated_at
 
@@ -60,13 +60,19 @@ class Post(db.Model):
             "updated_at": updated_at
         }
 
-        if self.comments and len(self.comments):
+        if links:
+            json_dict["links"] = [
+                {"rel": "comments", "href": 
+            f"/api/posts/{self.id}/comments"},
+            {"rel": "tags", "href": f"/api/posts/{self.id}/tags"}]
+
+        if self.comments and len(self.comments) and not links:
             json_dict["comments"] = []
 
             for comment in self.comments:
                 json_dict["comments"].append(comment.json())
     
-        if self.tags and len(self.tags):
+        if self.tags and len(self.tags) and not links:
             json_dict["tags"] = []
 
             for tag in self.tags:

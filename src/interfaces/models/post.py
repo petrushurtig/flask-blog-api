@@ -13,5 +13,5 @@ class IPost:
     comments: Any
     tags: Any
 
-    def json(self):
+    def json(self, all:bool = False):
         raise NotImplementedError
