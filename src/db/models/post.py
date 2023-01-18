@@ -63,8 +63,8 @@ class Post(db.Model):
         if links:
             json_dict["links"] = [
                 {"rel": "comments", "href": 
-            f"/api/posts/{self.id}/comments"},
-            {"rel": "tags", "href": f"/api/posts/{self.id}/tags"}]
+            f"/v1/posts/{self.id}/comments"},
+            {"rel": "tags", "href": f"/v1/posts/{self.id}/tags"}]
 
         if self.comments and len(self.comments) and not links:
             json_dict["comments"] = []

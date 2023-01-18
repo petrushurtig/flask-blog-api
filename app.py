@@ -25,15 +25,15 @@ app = Flask(__name__)
 
 app.config["SQLALCHEMY_DATABASE_URI"]=os.environ["DATABASE_URL"]
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["SWAGGER"] = {"title": "Blog API"}
+
 
 #Register routes
 
-app.register_blueprint(user_routes.blueprint, url_prefix='/api/users')
-app.register_blueprint(auth_routes.blueprint, url_prefix='/api/auth')
-app.register_blueprint(post_routes.blueprint, url_prefix='/api/posts')
-app.register_blueprint(comment_routes.blueprint, url_prefix='/api/comments')
-app.register_blueprint(admin_user_routes.blueprint, url_prefix='/api/admin/users')
+app.register_blueprint(user_routes.blueprint, url_prefix='/v1/users')
+app.register_blueprint(auth_routes.blueprint, url_prefix='/v1/auth')
+app.register_blueprint(post_routes.blueprint, url_prefix='/v1/posts')
+app.register_blueprint(comment_routes.blueprint, url_prefix='/v1/comments')
+app.register_blueprint(admin_user_routes.blueprint, url_prefix='/v1/admin/users')
 @app.route('/docs')
 def documentation():
     return redirect('/static/docs.html')
