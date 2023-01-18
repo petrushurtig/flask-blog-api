@@ -10,11 +10,11 @@ from src.db.config.db import db, bcrypt
 from src.common.containers import Container
 
 from src.web.routes import (
+    admin_routes,
     user_routes,
     post_routes,
     comment_routes,
-    auth_routes,
-    admin_user_routes
+    auth_routes
 )
 
 from src.db.models import * 
@@ -33,7 +33,7 @@ app.register_blueprint(user_routes.blueprint, url_prefix='/v1/users')
 app.register_blueprint(auth_routes.blueprint, url_prefix='/v1/auth')
 app.register_blueprint(post_routes.blueprint, url_prefix='/v1/posts')
 app.register_blueprint(comment_routes.blueprint, url_prefix='/v1/comments')
-app.register_blueprint(admin_user_routes.blueprint, url_prefix='/v1/admin/users')
+app.register_blueprint(admin_routes.blueprint, url_prefix='/v1/admin/users')
 @app.route('/docs')
 def documentation():
     return redirect('/static/docs.html')
@@ -53,7 +53,7 @@ container.wire(
         post_routes,
         comment_routes,
         auth_routes,
-        admin_user_routes
+        admin_routes
     ]
 )
 
