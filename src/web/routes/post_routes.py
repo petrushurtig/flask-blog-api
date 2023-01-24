@@ -1,14 +1,11 @@
-import datetime
-from flask import Blueprint, request, jsonify, url_for
+from flask import Blueprint, request, jsonify
 from dependency_injector.wiring import inject, Provide
 
 from app import app
 from src.db.models.post import Post
 from src.db.models.user import User
-from src.interfaces.models.user import IUser
 from src.interfaces.models.post import IPost
 from src.services.post_service import PostService
-from src.repositories.post_repository import PostRepository
 from src.web.middleware.auth_middleware import auth_required
 from src.common.hateoas import pagination_links
 from src.common.containers import Container
