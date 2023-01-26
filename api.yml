@@ -1,0 +1,416 @@
+swagger: "2.0"
+info:
+  title: Blog API
+  version: 1.0.0
+
+basePath: /v1
+definitions:
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        user_id:
+          type: integer
+        views:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        comments:
+          type: array
+          items:
+            $ref: '#/definitions/Comment'
+        tags:
+          type: array
+          items:
+            $ref: '#/definitions/Tag'
+      required:
+        - title
+        - content
+        - user_id
+    CreateUpdatePost:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        tags:
+          type: array
+          items:
+            $ref: '#/definitions/CreateTag'
+      required:
+        - title
+        - content
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+        content:
+          type: string
+        user_id:
+          type: integer
+        post_id:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    CreateUpdateComment:
+      type: object
+      properties:
+        content:
+          type: string
+      required:
+        - content
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    CreateTag:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
+    RoleType:
+      type: string
+      enum: &RoleType
+        - BASIC
+        - ADMIN
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        posts:
+          type: array
+          items:
+            $ref: '#/definitions/Post'
+        roles:
+          type: array
+          items:
+            $ref: '#/definitions/RoleType'
+      required:
+        - name
+        - email
+        - password
+    CreateUpdateUser:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        roles:
+          type: array
+          items:
+            $ref: '#/definitions/RoleType'
+      required:
+        - name
+        - email
+        - password
+    Role:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        type:
+          type: string
+          enum:
+            - BASIC
+            - ADMIN
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+        - type
+paths:
+  /posts:
+    get:
+      tags:
+        - post
+      summary: Retrieve all posts
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Post'
+    post:
+      tags:
+        - post
+      summary: Create a new post
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/definitions/Post'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json
+  /posts/{post_id}:
+    get:
+      tags:
+        - post
+      summary: Retrieve post by ID
+      parameters:
+        - name: post_id
+          in: path
+          schema:
+            type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Post'
+    put:
+      tags:
+        - post
+      summary: Update post by ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: post_id
+          in: path
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/definitions/Post'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Post'
+  /posts/{post_id}/comments:
+    get:
+      tags:
+        - post
+      summary: Retrieve all post comments
+      parameters:
+        - name: post_id
+          in: path
+          schema:
+            type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Post'
+  /admin/users:
+    get:
+      tags: 
+      - admin
+      summary: Get a list of users
+      security:
+        - BearerAuth: []
+      description: Retrieve all users
+      responses:
+        200:
+          description: Success
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+    #not admin route
+    post:
+      tags: 
+      - admin
+      summary: Create a new user
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateUpdateUser'
+      responses:
+        201:
+          description: Success
+          schema:
+            $ref: '#/definitions/User'
+  /admin/users/{user_id}:
+    get:
+      tags: 
+      - admin
+      summary: Get a specific user
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: The ID of the user
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/User'
+    put:
+      tags: 
+      - admin
+      summary: Update a specific user
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: The ID of the user
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateUpdateUser'
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/User'
+    delete:
+      tags: 
+      - admin
+      summary: Delete a specific user
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: The ID of the user
+      responses:
+        204:
+          description: Success
+  /comments/{post_id}:
+    post:
+      tags:
+        - comment
+      summary: Add comment to post
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: post_id
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/definitions/CreateUpdateComment'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Comment'
+    put:
+      tags:
+        - comment
+      summary: Update comment
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: post_id
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/definitions/CreateUpdateComment'
+      responses:
+        200:
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Comment'
+    delete:
+      tags:
+        - comment
+      summary: Delete comment
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: post_id
+          in: path
+          schema:
+            type: string
+      responses:
+        204:
+          description: Success
