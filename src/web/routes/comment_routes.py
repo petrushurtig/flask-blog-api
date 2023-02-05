@@ -1,10 +1,8 @@
-import datetime
 from flask import Blueprint, request, jsonify
 from dependency_injector.wiring import inject, Provide
 
 from src.interfaces.models.comment import IComment
 from src.interfaces.models.user import IUser
-from src.interfaces.repositories.comment_repository import ICommentRepository
 from src.services.comment_service import CommentService
 from src.services.post_service import PostService
 from src.web.middleware.auth_middleware import auth_required

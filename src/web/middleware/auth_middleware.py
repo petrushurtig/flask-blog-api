@@ -1,7 +1,6 @@
 from dependency_injector.wiring import inject, Provide
-from dotenv import load_dotenv
 from functools import wraps
-from flask import json, Response, request, g, jsonify
+from flask import request, jsonify
 
 from app import app
 from src.interfaces.repositories.user_repository import IUserRepository
