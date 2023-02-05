@@ -2,10 +2,11 @@ import os
 from dotenv import load_dotenv
 from flask_migrate import Migrate
 from flasgger import Swagger
-from flask import Flask, redirect, Response
+from flask import Flask, Response
 from flask_cors import CORS
 
 app = Flask(__name__)
+
 from src.db.config.db import db, bcrypt
 from src.common.containers import Container
 
@@ -16,7 +17,6 @@ from src.web.routes import (
     comment_routes,
     auth_routes
 )
-
 from src.db.models import * 
 
 load_dotenv()
@@ -24,17 +24,12 @@ load_dotenv()
 app.config["SQLALCHEMY_DATABASE_URI"]=os.environ["DATABASE_URL"]
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-
 #Register routes
-
 app.register_blueprint(user_routes.blueprint, url_prefix='/v1/users')
 app.register_blueprint(auth_routes.blueprint, url_prefix='/v1/auth')
 app.register_blueprint(post_routes.blueprint, url_prefix='/v1/posts')
 app.register_blueprint(comment_routes.blueprint, url_prefix='/v1/comments')
 app.register_blueprint(admin_routes.blueprint, url_prefix='/v1/admin/users')
-
-def documentation():
-    return redirect('/static/docs.html')
 
 response = Response()
 
@@ -62,12 +57,6 @@ container.wire(
     ]
 )
 
-
 @app.cli.command("seed")
 def command_seed():
     container.seed_command().execute()
-
-
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
