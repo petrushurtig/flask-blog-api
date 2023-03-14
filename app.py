@@ -2,8 +2,9 @@ import os
 from dotenv import load_dotenv
 from flask_migrate import Migrate
 from flasgger import Swagger
-from flask import Flask, Response
+from flask import Flask
 from flask_cors import CORS
+
 
 app = Flask(__name__)
 
@@ -31,17 +32,9 @@ app.register_blueprint(post_routes.blueprint, url_prefix='/v1/posts')
 app.register_blueprint(comment_routes.blueprint, url_prefix='/v1/comments')
 app.register_blueprint(admin_routes.blueprint, url_prefix='/v1/admin/users')
 
-response = Response()
-
-@app.after_request
-def add_header(response):
-    response.cache_control.max_age = 3600
-    return response
-
 migrate = Migrate(app, db, compare_type=True)
 swagger = Swagger(app, template_file="api.yml")
 CORS(app, origins="*")
-
 bcrypt.init_app(app)
 db.init_app(app)
 
@@ -60,3 +53,8 @@ container.wire(
 @app.cli.command("seed")
 def command_seed():
     container.seed_command().execute()
+
+@app.after_request
+def add_header(response):
+    response.cache_control.max_age = 3600
+    return response
