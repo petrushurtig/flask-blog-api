@@ -1,5 +1,3 @@
-
-
 from src.interfaces.models.comment import IComment
 from src.interfaces.repositories.comment_repository import ICommentRepository
 

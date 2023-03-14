@@ -1,5 +1,3 @@
-import datetime
-
 from src.db.config.db import db
 
 class Tag(db.Model):

@@ -1,5 +1,4 @@
 import datetime
-from marshmallow import fields, Schema
 from flask_bcrypt import check_password_hash
 
 from src.db.models.user_roles import user_roles
