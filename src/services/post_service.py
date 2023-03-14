@@ -63,7 +63,7 @@ class PostService(IPostService):
     def get_user_posts(self, user_id: int) -> "list[dict]":
         return self._post_repo.get_posts_by_user_id(user_id)
 
-    def create_post(self, user_id: str, post_data: dict) -> IPost:
+    def create_post(self, user_id: int, post_data: dict) -> IPost:
         
         if "title" not in post_data:
             raise Exception("Title is required")

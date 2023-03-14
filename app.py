@@ -6,6 +6,7 @@ from flask import Flask, redirect, Response
 from flask_cors import CORS
 
 app = Flask(__name__)
+
 from src.db.config.db import db, bcrypt
 from src.common.containers import Container
 

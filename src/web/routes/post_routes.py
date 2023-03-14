@@ -65,9 +65,12 @@ def create_post(
         post_data = request.get_json()
         post = post_service.create_post(user.id, post_data)
         
+        
         return jsonify(post.json()), 201
     except Exception as e:
+        print(f"user: {user}")
         app.logger.info(e)
+        print(f"app.logger.info: {e}")
         msg = {"message": "Server error"}
         return jsonify(msg), 500
 
